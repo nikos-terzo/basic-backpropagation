@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neural Network Cheatsheet</title>
+  <style>
+    :root {
+      --bg: #f7f7f3;
+      --paper: #ffffff;
+      --ink: #202124;
+      --muted: #62635f;
+      --line: #d3d2c9;
+      --structure: #dcecf6;
+      --layer: #d9efe6;
+      --activation: #f3dfc7;
+      --output: #efd8de;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 28px 44px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 28px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+
+    .column {
+      min-height: 620px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    .column h2 {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 17px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .structure h2 { background: var(--structure); }
+    .layer h2 { background: var(--layer); }
+    .activation h2 { background: var(--activation); }
+    .output h2 { background: var(--output); }
+
+    .item {
+      padding: 12px 2px;
+      border-top: 1px solid var(--line);
+    }
+
+    .item:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .item h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .item p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .tradeoff {
+      margin-top: 7px;
+      padding-left: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .tradeoff li + li {
+      margin-top: 3px;
+    }
+
+    .tradeoff strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.95em;
+      color: #1d1f21;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .column {
+        min-height: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Neural Network Cheatsheet</h1>
+    <p class="subtitle">
+      A small map of the concepts covered so far: network structure, layers,
+      activations, and output/loss/metrics.
+    </p>
+
+    <section class="grid" aria-label="Neural network cheatsheet">
+      <article class="column structure">
+        <h2>1. Network Structure</h2>
+
+        <section class="item">
+          <h3>Sequential</h3>
+          <p><code>step -> step -> step</code></p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> simplest to understand and implement.</li>
+            <li><strong>Con:</strong> no branches or shortcuts.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>Skip / residual</h3>
+          <p>Later output also receives an earlier value.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> can converge faster; shorter gradient path.</li>
+            <li><strong>Con:</strong> needs shape matching/projection.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>Branch</h3>
+          <p>One input flows into multiple paths.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> paths can learn different features.</li>
+            <li><strong>Con:</strong> harder to reason about than a chain.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>Merge / concat</h3>
+          <p>Multiple paths are combined again.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> combines different representations.</li>
+            <li><strong>Con:</strong> can increase size/parameters.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>Multi-head output</h3>
+          <p>Shared body, separate outputs for separate tasks.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> one model can learn related tasks.</li>
+            <li><strong>Con:</strong> losses may compete.</li>
+          </ul>
+        </section>
+      </article>
+
+      <article class="column layer">
+        <h2>2. Layer</h2>
+
+        <section class="item">
+          <h3>Linear</h3>
+          <p><code>z = W x + b</code></p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> clear matrix math.</li>
+            <li><strong>Con:</strong> ignores spatial structure if images are flattened.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>Conv2d</h3>
+          <p>Filters over image grids.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> uses local image structure.</li>
+            <li><strong>Con:</strong> less direct than plain matrices.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>BatchNorm</h3>
+          <p>Normalizes activations.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> can stabilize training.</li>
+            <li><strong>Con:</strong> behaves differently in train/eval mode.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>Dropout</h3>
+          <p>Randomly masks activations during training.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> can reduce overfitting.</li>
+            <li><strong>Con:</strong> may slow training.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>Pooling</h3>
+          <p>Reduces spatial size.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> cheaper and more compact.</li>
+            <li><strong>Con:</strong> discards detail.</li>
+          </ul>
+        </section>
+      </article>
+
+      <article class="column activation">
+        <h2>3. Activation</h2>
+
+        <section class="item">
+          <h3>Sigmoid</h3>
+          <p>Squashes to <code>0..1</code>.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> intuitive and historically important.</li>
+            <li><strong>Con:</strong> gradients can become tiny.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>ReLU</h3>
+          <p><code>max(0, z)</code></p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> simple and trains well.</li>
+            <li><strong>Con:</strong> negative side is fully zero.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>Tanh</h3>
+          <p>Squashes to <code>-1..1</code>.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> centered around zero.</li>
+            <li><strong>Con:</strong> still saturates.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>LeakyReLU</h3>
+          <p>ReLU with small negative slope.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> keeps some negative-side gradient.</li>
+            <li><strong>Con:</strong> adds a slope choice.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>GELU / SiLU</h3>
+          <p>Smooth modern activations.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> often strong in modern networks.</li>
+            <li><strong>Con:</strong> less transparent than ReLU.</li>
+          </ul>
+        </section>
+      </article>
+
+      <article class="column output">
+        <h2>4. Output / Loss / Metric</h2>
+
+        <section class="item">
+          <h3>Sigmoid output + mean squared error</h3>
+          <p>Matrix example.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> easy to derive by hand.</li>
+            <li><strong>Con:</strong> less standard for single-label classification.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>Logits + cross entropy loss</h3>
+          <p>PyTorch example.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> standard for class prediction.</li>
+            <li><strong>Con:</strong> hides softmax/log details inside the loss.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>Softmax</h3>
+          <p><code>exp(score) / sum(exp(scores))</code></p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> makes classes compete.</li>
+            <li><strong>Con:</strong> probabilities can become overconfident.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>Accuracy</h3>
+          <p>Argmax correctness, not training loss.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> simple final performance metric.</li>
+            <li><strong>Con:</strong> ignores confidence.</li>
+          </ul>
+        </section>
+
+        <section class="item">
+          <h3>Confusion matrix</h3>
+          <p>Expected class vs predicted class.</p>
+          <ul class="tradeoff">
+            <li><strong>Pro:</strong> shows which classes are confused.</li>
+            <li><strong>Con:</strong> more verbose than one number.</li>
+          </ul>
+        </section>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

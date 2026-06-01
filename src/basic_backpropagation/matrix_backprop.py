@@ -62,7 +62,7 @@ def one_hot(labels: IntVector) -> FloatMatrix:
 
 def load_mnist_training_data() -> TrainingData:
     with gzip.open(DATA_PATH, "rb") as f:
-        raw_data: object = pickle.load(f, encoding="latin1")  # pyright: ignore[reportAny]
+        raw_data: object = pickle.load(f, encoding="latin1")
 
     training_data = cast(RawMnistData, raw_data)[0]
     images, labels = training_data
@@ -82,7 +82,7 @@ def cost(a3: FloatMatrix, y: FloatMatrix) -> float:
     assert a3.ndim == 2, f"expected output matrices, got {a3.ndim} dimensions"
     m = y.shape[1]
     squared_error = (a3 - y) ** 2
-    return float(0.5 * np.sum(squared_error) / m)
+    return 0.5 * np.sum(squared_error) / m
 
 
 def accuracy(a3: FloatMatrix, y: FloatMatrix) -> float:

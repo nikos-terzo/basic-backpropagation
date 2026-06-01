@@ -2,6 +2,9 @@
   "venvPath": ".",
   "venv": ".venv",
   "pythonVersion": "3.10",
+  "extraPaths": [
+    "src"
+  ],
   "exclude": [
     ".venv",
     "neural-networks-and-deep-learning"
